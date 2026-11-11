@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fragebogenset (Diagnostik)</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #333; line-height: 1.5; }
+        h1 { font-size: 1.5rem; border-bottom: 2px solid #0056b3; padding-bottom: 0.5rem; }
+        h2 { font-size: 1.25rem; margin-top: 1.5rem; color: #0056b3; border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; }
+        h3 { font-size: 1.1rem; margin-top: 1.2rem; color: #333; }
+        .intro { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #0056b3; }
+        .example-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
+        .pseudo-box { background: #e9ecef; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
+        .pseudo-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .pseudo-field { display: flex; flex-direction: column; }
+        .pseudo-field input { padding: 0.4rem; font-size: 1rem; width: 120px; }
+        .item { background: #fff; border: 1px solid #dee2e6; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; }
+        .item-text { font-weight: 500; margin-bottom: 0.8rem; }
+        .options { display: flex; flex-direction: column; gap: 0.4rem; }
+        .options label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .button-row { display: flex; gap: 1rem; margin-top: 2rem; }
+        button { background: #0056b3; color: white; border: none; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 6px; cursor: pointer; flex: 1; }
+        button:hover { background: #004085; }
+        button.secondary { background: #6c757d; }
+        button.secondary:hover { background: #5a6268; }
+        .step-section { display: none; }
+        .step-section.active { display: block; }
+        .result-box { background: #e2f0d9; border: 1px solid #c8e1b7; padding: 1.5rem; border-radius: 8px; margin-top: 2rem; display: none; }
+        .result-box h3 { margin-top: 0; color: #28a745; }
+        .save-notice { font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic; }
+        .progress-indicator { font-weight: bold; color: #0056b3; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+    <h1>Fragebogenset (Diagnostik)</h1>
+    
+    <div class="intro">
+        <p>Bitte füllen Sie alle nachfolgenden Fragebögen vollständig aus. Die Erfassung erfolgt anonymisiert über Ihr persönliches Pseudonym.</p>
+        <p class="save-notice">Ihre Eingaben werden automatisch lokal zwischengespeichert. Sie können den Fragebogen jederzeit unterbrechen und später auf demselben Gerät fortfahren.</p>
+    </div>
+
+    <form id="adhsFormSet">
+        
+        <!-- SCHRITT 1: Pseudonym & WURS-K -->
+        <div class="step-section active" id="step-1">
+            <div class="progress-indicator">Schritt 1 von 5: Pseudonym & Wender Utah Rating Scale (WURS-K)</div>
+            
+            <div class="pseudo-box">
+                <strong>Pseudonymisierung für die Auswertung:</strong>
+                <div class="pseudo-row">
+                    <div class="pseudo-field">
+                        <label>1. Buchstabe Vorname</label>
+                        <input type="text" id="initV" maxlength="1" required style="width: 80px;">
+                    </div>
+                    <div class="pseudo-field">
+                        <label>1. Buchstabe Nachname</label>
+                        <input type="text" id="initN" maxlength="1" required style="width: 80px;">
+                    </div>
+                    <div class="pseudo-field">
+                        <label>Geburtstag (TT)</label>
+                        <input type="text" id="geburtsTag" maxlength="2" placeholder="z.B. 14" required style="width: 80px;">
+                    </div>
+                    <div class="pseudo-field">
+                        <label>Geburtsjahr (JJJJ)</label>
+                        <input type="text" id="geburtsJahr" maxlength="4" placeholder="z.B. 1990" required style="width: 100px;">
+                    </div>
+                </div>
+            </div>
+
+            <h2>1. Wender Utah Rating Scale Kurzform (WURS-K)</h2>
+            <div class="intro" style="margin-top: 1rem;">
+                <p>Im Folgenden finden Sie eine Reihe von Aussagen über bestimmte Verhaltensweisen, Eigenschaften und Schwierigkeiten als Kind im Alter von ca. 8 bis 10 Jahren.</p>
+            </div>
+            <div id="wursContainer"></div>
+
+            <div class="button-row">
+                <button type="button" onclick="nextStep(2)">Weiter zu Teil 2</button>
+            </div>
+        </div>
+
+        <!-- SCHRITT 2: ADHS-SB -->
+        <div class="step-section" id="step-2">
+            <div class="progress-indicator">Schritt 2 von 5: ADHS-Selbstbeurteilungsskala (ADHS-SB)</div>
+            
+            <h2>2. ADHS-Selbstbeurteilungsskala (ADHS-SB)</h2>
+            <div class="intro" style="margin-top: 1rem;">
+                <p>Nachfolgend finden Sie einige Fragen über Konzentrationsvermögen, Bewegungsbedürfnis und Nervosität. Gemeint ist damit Ihre Situation, wie sie sich gewöhnlich darstellt.</p>
+                <ul>
+                    <li><strong>0</strong> = trifft nicht zu</li>
+                    <li><strong>1</strong> = leicht ausgeprägt (kommt gelegentlich vor)</li>
+                    <li><strong>2</strong> = mittel ausgeprägt (kommt oft vor)</li>
+                    <li><strong>3</strong> = schwer ausgeprägt (kommt nahezu immer vor)</li>
+                </ul>
+            </div>
+
+            <div id="adhsSbContainer"></div>
+
+            <div class="button-row">
+                <button type="button" class="secondary" onclick="prevStep(1)">Zurück</button>
+                <button type="button" onclick="nextStep(3)">Weiter zu Teil 3</button>
+            </div>
+        </div>
+
+        <!-- SCHRITT 3: Asperger-Test (AQ) -->
+        <div class="step-section" id="step-3">
+            <div class="progress-indicator">Schritt 3 von 5: Asperger-Test (AQ)</div>
+            
+            <h2>3. Asperger-Test (AQ)</h2>
+            <div class="intro" style="margin-top: 1rem;">
+                <p>Bitte beantworten Sie die folgenden Fragen mit ja oder nein.</p>
+            </div>
+            <div id="aqContainer"></div>
+
+            <div class="button-row">
+                <button type="button" class="secondary" onclick="prevStep(2)">Zurück</button>
+                <button type="button" onclick="nextStep(4)">Weiter zu Teil 4 (HEALTH-49)</button>
+            </div>
+        </div>
+
+        <!-- SCHRITT 4: HEALTH-49 -->
+        <div class="step-section" id="step-4">
+            <div class="progress-indicator">Schritt 4 von 5: HEALTH-49 (Psychosoziale Gesundheit)</div>
+            
+            <h2>4. Hamburger Module zur Erfassung allgemeiner Aspekte psychosozialer Gesundheit (HEALTH-49)</h2>
+            <div id="healthContainer"></div>
+
+            <div class="button-row">
+                <button type="button" class="secondary" onclick="prevStep(3)">Zurück</button>
+                <button type="button" onclick="nextStep(5)">Weiter zu Teil 5 (PHQ-D)</button>
+            </div>
+        </div>
+
+        <!-- SCHRITT 5: PHQ-D -->
+        <div class="step-section" id="step-5">
+            <div class="progress-indicator">Schritt 5 von 5: Gesundheitsfragebogen für Patienten (PHQ-D)</div>
+            
+            <h2>5. Gesundheitsfragebogen für Patienten (PHQ-D)</h2>
+            
+            <h3>Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?</h3>
+            <div id="phqSymptomContainer"></div>
+
+            <h3>Fragen zum Thema „Angst“</h3>
+            <div class="item">
+                <div class="item-text">3a. Hatten Sie in den letzten 4 Wochen eine Angstattacke (plötzliches Gefühl der Furcht oder Panik)?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_3a" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_3a" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">3b. Ist dies bereits früher einmal vorgekommen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_3b" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_3b" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">3c. Treten manche dieser Anfälle völlig unerwartet auf d. h. in Situationen, in denen Sie nicht damit rechnen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_3c" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_3c" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">3d. Empfinden Sie diese Anfälle als stark beeinträchtigend, und/oder haben Sie Angst vor erneuten Anfällen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_3d" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_3d" value="JA"> JA</label>
+                </div>
+            </div>
+
+            <h3>Denken Sie bitte an Ihren letzten schlimmen Angstanfall. Traten folgende Symptome auf?</h3>
+            <div id="phqPanicContainer"></div>
+
+            <h3>Wie stark fühlten Sie sich im Verlauf der letzten 4 Wochen durch die folgenden Beschwerden beeinträchtigt?</h3>
+            <div id="phqSomatoContainer"></div>
+
+            <h3>Wie oft fühlten Sie sich im Verlauf der letzten 4 Wochen durch die folgenden Beschwerden beeinträchtigt?</h3>
+            <div id="phqAnxietyContainer"></div>
+
+            <h3>Alkohol-Fragen</h3>
+            <div class="item">
+                <div class="item-text">Trinken Sie manchmal Alkohol (einschließlich Bier oder Wein)?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_alcohol" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_alcohol" value="JA"> JA</label>
+                </div>
+            </div>
+            <div id="phqAlcoholContainer"></div>
+
+            <h3>Fragen zum Thema „Essen“</h3>
+            <div class="item">
+                <div class="item-text">6a. Haben Sie öfter das Gefühl, Sie könnten nicht kontrollieren, wie viel und was Sie essen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_6a" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_6a" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">6b. Essen Sie öfter – in einem Zeitraum von 2 Stunden – Mengen, die andere Leute als ungewöhnlich groß bezeichnen würden?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_6b" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_6b" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">6c. Ist dies während der letzten 3 Monate im Durchschnitt mindestens zweimal in der Woche vorgekommen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_6c" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_6c" value="JA"> JA</label>
+                </div>
+            </div>
+
+            <h3>Haben Sie während der letzten 3 Monate öfter eine oder mehrere der folgenden Maßnahmen unternommen, um eine Gewichtszunahme zu vermeiden?</h3>
+            <div class="item">
+                <div class="item-text">7a. Sich selbst zum Erbrechen gebracht?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_7a" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_7a" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">7b. Mehr als die doppelte empfohlene Dosis eines Abführmittels eingenommen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_7b" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_7b" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">7c. Gefastet, d. h. mindestens 24 Stunden lang nichts gegessen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_7c" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_7c" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">7d. Mehr als eine Stunde Sport getrieben mit dem ausschließlichen Ziel, nicht zuzunehmen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_7d" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_7d" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">8. Kam eine dieser Maßnahmen im Durchschnitt mindestens zweimal in der Woche vor?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_8" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_8" value="JA"> JA</label>
+                </div>
+            </div>
+
+            <h3>Wie stark fühlten Sie sich im Verlauf der letzten 4 Wochen durch die folgenden Beschwerden bzw. Lebensumstände beeinträchtigt?</h3>
+            <div id="phqStressContainer"></div>
+
+            <div class="item">
+                <div class="item-text">Sind Sie im letzten Jahr geschlagen, getreten oder anderweitig von jemandem körperlich verletzt worden oder hat Sie jemand zu einer ungewünschten sexuellen Handlung gezwungen?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_violence" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_violence" value="JA"> JA</label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-text">15. Nehmen Sie Medikamente gegen Angst, Depressionen oder Stress?</div>
+                <div class="options">
+                    <label><input type="radio" name="phq_meds" value="NEIN"> NEIN</label>
+                    <label><input type="radio" name="phq_meds" value="JA"> JA</label>
+                </div>
+            </div>
+
+            <h3>Beeinträchtigung durch Probleme:</h3>
+            <div class="item">
+                <div class="options">
+                    <label><input type="radio" name="phq_disability" value="0"> Überhaupt nicht erschwert</label>
+                    <label><input type="radio" name="phq_disability" value="1"> Etwas erschwert</label>
+                    <label><input type="radio" name="phq_disability" value="2"> Relativ stark erschwert</label>
+                    <label><input type="radio" name="phq_disability" value="3"> Sehr stark erschwert</label>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button type="button" class="secondary" onclick="prevStep(4)">Zurück</button>
+                <button type="submit">Alle Fragebögen absenden</button>
+            </div>
+        </div>
+
+    </form>
+
+    <div id="resultBox" class="result-box">
+        <h3>Übermittlung erfolgreich</h3>
+        <p id="resultContent"></p>
+    </div>
+
+    <script>
+        const wursItems = [
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Konzentrationsprobleme bzw. war leicht ablenkbar.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich zappelig und nervös.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich unaufmerksam und verträumt.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich gut organisiert, sauber und ordentlich.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Wutanfälle und Gefühlsausbrüche.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich ein geringes Durchhaltevermögen, brach ich Tätigkeiten vor deren Beendigung ab.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich traurig, unglücklich und depressiv.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich ungehorsam, rebellisch und aufsässig.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich ein geringes Selbstwertgefühl bzw. eine niedrige Selbsteinschätzung.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich leicht zu irritieren.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich starke Stimmungsschwankungen und war launisch.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich ein guter Schüler bzw. eine gute Schülerin.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich oft ärgerlich oder verärgert.",
+            "Als Kind im Alter von 8 bis 10 Jahren verfügte ich über eine gute motorische Koordinationsfähigkeit und wurde immer zuerst als Mitspieler ausgesucht.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich eine Tendenz zur Unreife.",
+            "Als Kind im Alter von 8 bis 10 Jahren verlor ich oft die Selbstkontrolle.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich die Tendenz, unvernünftig zu sein oder unvernünftig zu handeln.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Probleme mit anderen Kindern und keine langen Freundschaften.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Angst, die Selbstbeherrschung zu verlieren.",
+            "Als Kind im Alter von 8 bis 10 Jahren bin ich von zu Hause fortgelaufen.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich in Raufereien verwickelt.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Schwierigkeiten mit Autoritäten (z. B. Ärger in der Schule oder Vorladungen beim Direktor).",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Ärger mit der Polizei.",
+            "Als Kind im Alter von 8 bis 10 Jahren war ich insgesamt ein schlechter Schüler/eine schlechte Schülerin und lernte langsam.",
+            "Als Kind im Alter von 8 bis 10 Jahren hatte ich Freunde und war beliebt."
+        ];
+        const wursScaleLabels = ["0 = trifft nicht zu / gering", "1 = leicht / selten", "2 = mäßig", "3 = deutlich", "4 = stark"];
+
+        const adhsSbItems = [
+            "1. Ich bin unaufmerksam gegenüber Details oder mache Sorgfaltsfehler bei der Arbeit.",
+            "2. Bei der Arbeit oder sonstigen Aktivitäten (z. B. Lesen, Fernsehen, Spiel) fällt es mir schwer, konzentriert durchzuhalten.",
+            "3. Ich höre nicht richtig zu, wenn jemand etwas zu mir sagt.",
+            "4. Es fällt mir schwer, Aufgaben am Arbeitsplatz, wie sie mir erklärt wurden, zu erfüllen.",
+            "5. Es fällt mir schwer, Projekte, Vorhaben oder Aktivitäten zu organisieren.",
+            "6. Ich gehe Aufgaben, die geistige Anstrengung erforderlich machen, am liebsten aus dem Weg. Ich mag solche Arbeiten nicht oder sträube mich innerlich dagegen.",
+            "7. Ich verlege wichtige Gegenstände (z. B. Schlüssel, Portemonnaie, Werkzeuge).",
+            "8. Ich lasse mich bei Tätigkeiten leicht ablenken.",
+            "9. Ich vergesse Verabredungen, Termine oder telefonische Rückrufe.",
+            "10. Ich bin zappelig.",
+            "11. Es fällt mir schwer, längere Zeit sitzen zu bleiben (z. B. im Kino, Theater).",
+            "12. Ich fühle mich unruhig.",
+            "13. Ich kann mich schlecht leise beschäftigen. Wenn ich etwas mache, geht es laut zu.",
+            "14. Ich bin ständig auf Achse und fühle mich wie von einem Motor angetrieben.",
+            "15. Mir fällt es schwer abzuwarten, bis andere ausgesprochen haben. Ich falle anderen ins Wort.",
+            "16. Ich bin ungeduldig und kann nicht warten, bis ich an der Reihe bin (z. B. beim Einkaufen).",
+            "17. Ich unterbreche und störe andere, wenn sie etwas tun.",
+            "18. Ich rede viel, auch wenn mir keiner zuhören will.",
+            "19. Diese Schwierigkeiten hatte ich schon im Schulalter.",
+            "20. Diese Schwierigkeiten habe ich immer wieder, nicht nur bei der Arbeit, sondern auch in anderen Lebenssituationen, z.B. Familie, Freunde und Freizeit.",
+            "21. Ich leide unter diesen Schwierigkeiten.",
+            "22. Ich habe wegen dieser Schwierigkeiten schon Probleme im Beruf und auch im Kontakt mit anderen Menschen gehabt."
+        ];
+        const adhsSbScaleLabels = ["0 = trifft nicht zu", "1 = leicht ausgeprägt (kommt gelegentlich vor)", "2 = mittel ausgeprägt (kommt oft vor)", "3 = schwer ausgeprägt (kommt nahezu immer vor)"];
+
+        const aqItems = [
+            "Ich mache lieber Sachen mit anderen als alleine.", "Ich bevorzuge, Dinge immer wieder auf dieselbe Art und Weise zu machen.",
+            "Wenn ich versuche mir etwas vorzustellen, fällt es mir nicht leicht, ein Bild im Kopf entstehen zu lassen.", "Ich verliere mich oft so in Aufgaben, dass ich alle anderen Dinge rundherum vergesse.",
+            "Ich höre oft leise Geräusche, die andere nicht hören.", "Ich merke mir oft Autonummern oder Schilder mit ähnlichen Beschriftungen.",
+            "Andere Menschen sagen mir häufig, dass das, was ich gesagt habe, unhöflich war, obwohl ich denke, es sei höflich gewesen.", "Wenn ich eine Geschichte lese, kann ich mir leicht vorstellen, wie die Figuren in der Geschichte aussehen könnten.",
+            "Datumsangaben faszinieren mich.", "Ich kann in der Gruppe leicht den Gesprächen von mehreren unterschiedlichen Menschen folgen.",
+            "In sozialen Situationen fühle ich mich wohl.", "Ich bemerke öfters Details, die andere Menschen nicht mitbekommen.",
+            "Ich würde lieber in die Bibliothek als zu einer Party gehen.", "Mir fällt es leicht, Geschichten zu erfinden.",
+            "Ich fühle mich eher von Menschen als von Gegenständen angezogen.", "Bestimmten Interessen gehe ich sehr gezielt nach und ärgere mich, wenn ich daran gehindert werde.",
+            "Ich genieße Gespräche über Land und Leute.", "Wenn ich mich unterhalte, können mich andere kaum unterbrechen.",
+            "Zahlen faszinieren mich.", "Wenn ich eine Geschichte lese, fällt es mir schwer, mir die Absichten der Figuren vorzustellen.",
+            "Mir macht es keinen besonderen Spaß, Romane zu lesen.", "Mir fällt es schwer, neue Freunde kennen zu lernen.",
+            "Mir fallen ständig Muster an Gegenständen auf.", "Ich würde eher ins Theater als in ein Museum gehen.",
+            "Es macht mir nichts aus, wenn sich mein Tagesablauf verändert.", "Ich stelle oft fest, dass ich nicht weiß, wie ich ein Gespräch aufrecht erhalten kann.",
+            "Es fällt mir leicht, Zwischentöne zu verstehen, wenn sich jemand mit mir unterhält.", "Normalerweise konzentriere ich mich mehr auf das Gesamtbild als auf Details.",
+            "Ich kann mit Telefonnummern schlecht merken.", "Mir fallen kleine Veränderungen einer bestimmten Situation oder an bestimmten Personen selten auf.",
+            "Wenn ich mit jemanden rede, merke ich, wenn es ihm/ihr langweilig wird.", "Mir fällt es leicht, mehrere Sachen gleichzeitig zu machen.",
+            "Wenn ich mit jemandem spreche, weiß ich nicht genau, wann ich an der Reihe bin.", "Ich bin gerne spontan.",
+            "Ich verstehe Pointen bei einem Witz oft als allerletzte/r", "Ich finde es leicht herauszufinden, was jemand denkt, wenn ich nur auf ihr/sein Gesicht schaue.",
+            "Wenn ich unterbrochen worden bin, kann ich schnell mit meiner vorherigen Tätigkeit weitermachen.", "Mir macht es Spaß, mich mit Leuten zu unterhalten.",
+            "Oft wird mir erzählt, dass ich ständig über dieselben Dinge spreche.", "Als ich klein war, habe ich gerne Rollenspiele mit anderen Kindern gespielt.",
+            "Ich sammele gerne Informationen zu Kategorien einer Sache, z.B. zu Autotypen, Vogelarten, Zugtypen oder Pflanzenarten.", "Mir fällt es schwer, mich in andere Personen hineinzuversetzen.",
+            "Ich plane Sachen, die ich unternehmen will, immer sehr gründlich.", "Ich genieße soziale Ereignisse.",
+            "Mir fällt es schwer zu erkennen, was andere Menschen vorhaben.", "Unbekannte Situationen ängstigen mich.",
+            "I lerne gerne neue Leute kennen.", "Ich bin sehr diplomatisch.", "Ich kann mich gut an Geburtstag erinnern.", "Mir fällt es leicht, Rollen - oder Phantasiespiele mit Kindern zu spielen."
+        ];
+
+        const healthSections = [
+            {
+                title: "Modul A: Beschwerden (letzte zwei Wochen)",
+                intro: "Wie sehr litten Sie in den letzten zwei Wochen unter...?",
+                scale: ["nicht", "wenig", "mittel", "ziemlich", "sehr"],
+                items: [
+                    "1. Angst oder Furcht, alleine aus dem Haus zu gehen", "2. Niedergeschlagenheit oder Traurigkeit", "3. Rückenschmerzen",
+                    "4. dem Gefühl, wertlos zu sein", "5. Angst oder Furcht, sich in größere Menschenmengen zu begeben", "6. Schuldgefühlen oder Selbstvorwürfen",
+                    "7. Bauchschmerzen oder Verdauungsproblemen", "8. Gedanken, dass Sie lieber tot wären oder Ihr Leben beenden möchten", "9. einem Schwächegefühl in einzelnen Körperteilen",
+                    "10. Angst oder Furcht vor offenen Plätzen oder auf die Straße zu gehen", "11. fehlendem Interesse und geringer Freude an Ihren Tätigkeiten", "12. einem Gefühl von Schwere in den Armen und Beinen",
+                    "13. Schmerzen in Muskeln oder Gelenken", "14. einem Gefühl der Hoffnungslosigkeit", "15. Kopfschmerzen oder Gesichtsschmerzen",
+                    "16. Angst oder Furcht vor Fahrten in Bus, Straßenbahn, U-Bahn oder Zug", "17. Taubheit oder Kribbeln in einzelnen Körperteilen", "18. Angst oder Furcht vor geschlossenen Räumen (z.B. Fahrstuhl, Tunnel, Kino)"
+                ]
+            },
+            {
+                title: "Modul B: Wohlbefinden (letzte zwei Wochen)",
+                intro: "Bitte geben Sie an, wie oft Sie sich in den letzten zwei Wochen so gefühlt haben!",
+                scale: ["nie", "selten", "gelegentlich", "oft", "immer"],
+                items: ["1. Ich fühle mich gelöst", "2. Ich fühle mich wohl", "3. Ich bin entspannt", "4. Ich fühle mich ausgeruht", "5. Ich kann genießen"]
+            },
+            {
+                title: "Modul C: Interaktionelle Schwierigkeiten (letzte zwei Wochen)",
+                intro: "Wie sehr litten Sie in den letzten zwei Wochen...?",
+                scale: ["nicht", "wenig", "mittel", "ziemlich", "sehr"],
+                items: [
+                    "1. unter Schwierigkeiten, anderen Menschen Ihre Gefühle zu zeigen", "2. unter der mangelnden Fähigkeit, anderen gegenüber bestimmt aufzutreten, wenn es die Lage erfordert",
+                    "3. unter Schwierigkeiten, Ihre wichtigen Anliegen anderen gegenüber durchzusetzen", "4. unter Schwierigkeiten, andere wissen zu lassen, dass Sie wütend sind",
+                    "5. unter Schwierigkeiten, jemandem zu sagen, dass er Sie nicht weiter belästigen soll", "6. darunter, dass Sie sich zu sehr von anderen ausnutzen lassen", "7. unter der Angst, etwas Falsches zu sagen oder zu tun"
+                ]
+            },
+            {
+                title: "Modul D: Selbstwirksamkeit (letzte zwei Wochen)",
+                intro: "Trotz meiner Beschwerden bin ich in der Lage...",
+                scale: ["stimmt nicht", "stimmt wenig", "stimmt mittelmäßig", "stimmt ziemlich", "stimmt sehr"],
+                items: [
+                    "1. mit meinen Schwierigkeiten und Problemen gut umzugehen", "2. meine persönlichen Ziele, die ich mir setze, zu erreichen",
+                    "3. schwierige Probleme zu lösen", "4. meinen normalen Lebensstil aufrechtzuerhalten", "5. mir neue Fertigkeiten und Kompetenzen anzueignen"
+                ]
+            },
+            {
+                title: "Modul E: Aktivität und Partizipation (letzte zwei Wochen)",
+                intro: "Beeinträchtigungen in Beruf, Haushalt, Freizeit oder sozialen Beziehungen:",
+                scaleTypes: [
+                    { label: "Wie oft hatten Sie irgendwelche Schwierigkeiten bei der Arbeit oder anderen alltäglichen Tätigkeiten und Aufgaben?", options: ["nie", "selten", "gelegentlich", "oft", "immer"], items: ["1. Ich habe weniger geschafft als ich wollte", "2. Ich konnte nicht so sorgfältig wie üblich arbeiten"] },
+                    { label: "Wie sehr waren Ihre normalen Kontakte zu Familienangehörigen, Freunden, Nachbarn oder zum Bekanntenkreis beeinträchtigt?", options: ["nicht", "wenig", "mittel", "ziemlich", "sehr"], items: ["3. Kontakte zu nahestehenden Personen beeinträchtigt"] },
+                    { label: "Wie stark waren Sie darin beeinträchtigt, sich selbst zu versorgen (z.B. Einkaufen, Waschen, Kochen)?", options: ["nicht", "wenig", "mittel", "ziemlich", "sehr"], items: ["4. Selbstversorgung beeinträchtigt"] },
+                    { label: "Wie oft waren Sie in Ihrer Freizeit beeinträchtigt?", options: ["nie", "selten", "gelegentlich", "oft", "immer"], items: ["5. Ich konnte nicht so lange wie gewohnt meinen Freizeitbeschäftigungen und Hobbys nachgehen", "6. Ich konnte nicht meinen gewohnten Freizeitbeschäftigungen und Hobbys nachgehen"] }
+                ]
+            },
+            {
+                title: "Modul F: Soziales Netz (letzte zwei Wochen)",
+                intro: "Bitte geben Sie an, wie häufig von den Menschen, die Ihnen nahe stehen, jemand...",
+                scale: ["nie", "selten", "gelegentlich", "oft", "immer"],
+                items: [
+                    "1. Ihre Schwierigkeiten und Probleme herunter spielt", "2. für Sie da ist, wenn Sie ihn/sie brauchen",
+                    "3. sich unbehaglich zu fühlen scheint, wenn er/sie mit Ihnen über Ihre Probleme spricht", "4. wichtige Entscheidungen mit Ihnen bespricht",
+                    "5. mehr von Ihnen erwartet, als Sie leisten können", "6. Sie aufmuntert oder tröstet",
+                    "7. sich ärgert, wenn Sie seinen/ihren Rat nicht annehmen", "8. einen Teil seiner/ihrer Zeit oder Energie opfert, um etwas für Sie zu erledigen"
+                ]
+            }
+        ];
+
+        const phqSymptomItems = [
+            "a. Wenig Interesse oder Freude an Ihren Tätigkeiten.", "b. Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit",
+            "c. Schwierigkeiten, ein- oder durchzuschlafen, oder vermehrter Schlaf", "d. Müdigkeit oder Gefühl, keine Energie zu haben",
+            "e. Verminderter Appetit oder übermäßiges Bedürfnis zu essen", "f. Schlechte Meinung von sich selbst, Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben",
+            "g. Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Zeitunglesen oder Fernsehen", "h. Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde?",
+            "i. Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten"
+        ];
+        const phqSymptomScale = ["Überhaupt nicht", "An einzelnen Tagen", "An mehr als der Hälfte der Tage", "Beinahe jeden Tag"];
+
+        const phqPanicItems = [
+            "a. Bekamen Sie schlecht Luft?", "b. Hatten Sie Herzrasen, Herzklopfen oder unregelmäßigen Herzschlag?",
+            "c. Hatten Sie Schmerzen oder ein Druckgefühl in der Brust?", "d. Haben Sie geschwitzt?",
+            "e. Hatten Sie das Gefühl zu ersticken?", "f. Hatten Sie Hitzewallungen oder Kälteschauer?",
+            "g. Wurde Ihnen übel, hatten Sie Magenbeschwerden oder das Gefühl, Sie würden Durchfall bekommen?",
+            "h. Fühlten Sie sich schwindelig, unsicher, benommen oder einer Ohnmacht nahe?",
+            "i. Spürten Sie ein Kribbeln oder hatten Sie ein Taubheitsgefühl in Teilen Ihres Körpers?",
+            "j. Zitterten oder bebten Sie?", "k. Hatten Sie Angst, Sie würden sterben?"
+        ];
+
+        const phqSomatoItems = [
+            "a. Bauchschmerzen", "b. Rückenschmerzen", "c. Schmerzen in Armen, Beinen oder Gelenken (Knie, Hüften usw.)",
+            "d. Menstruationsschmerzen oder andere Probleme mit der Menstruation", "e. Schmerzen oder Probleme beim Geschlechtsverkehr",
+            "f. Kopfschmerzen", "g. Schmerzen im Brustbereich", "h. Schwindel", "i. Ohnmachtsanfälle",
+            "j. Herzklopfen oder Herzrasen", "k. Kurzatmigkeit", "l. Verstopfung, nervöser Darm oder Durchfall", "m. Übelkeit, Blähungen oder Verdauungsbeschwerden"
+        ];
+        const phqSomatoScale = ["Nicht beeinträchtigt", "Wenig beeinträchtigt", "Stark beeinträchtigt"];
+
+        const phqAnxietyItems = [
+            "a. Nervosität, Ängstlichkeit, Anspannung oder übermäßige Besorgnis", "b. Gefühle der Unruhe, sodass Stillsitzen schwer fällt",
+            "c. Leichte Ermüdbarkeit", "d. Muskelverspannungen, Muskelschmerzen", "e. Schwierigkeiten beim Ein- oder Durchschlafen",
+            "f. Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Lesen oder beim Fernsehen", "g. Leichte Reizbarkeit, Überempfindlichkeit"
+        ];
+        const phqAnxietyScale = ["Überhaupt nicht", "An einzelnen Tagen", "An mehr als der Hälfte der Tage", "Beinahe jeden Tag"];
+
+        const phqAlcoholItems = [
+            "a. Sie haben Alkohol getrunken, obwohl Ihnen ein Arzt angeraten hat...", "b. Sie haben bei der Arbeit, in der Schule... Alkohol getrunken...",
+            "c. Sie sind der Arbeit... fern geblieben... weil Sie getrunken hatten...", "d. Sie hatten Schwierigkeiten, mit anderen auszukommen...",
+            "e. Sie sind Auto gefahren, nachdem Sie mehrere Gläser Alkohol... getrunken hatten?"
+        ];
+
+        const phqStressItems = [
+            "a. Sorgen über Ihre Gesundheit", "b. Sorgen über Ihr Gewicht oder Ihr Aussehen",
+            "c. Wenig oder kein sexuelles Verlangen", "d. Schwierigkeiten mit dem Ehepartner",
+            "e. Belastung durch die Versorgung von Kindern oder Angehörigen", "f. Stress bei der Arbeit oder in der Schule",
+            "g. Finanzielle Probleme oder Sorgen", "h. Niemanden zu haben, mit den man Probleme besprechen kann",
+            "i. Etwas Schlimmes, das vor kurzem passiert ist", "j. Gedanken an schreckliche Ereignisse von früher"
+        ];
+        const phqStressScale = ["Nicht beeinträchtigt", "Wenig beeinträchtigt", "Stark beeinträchtigt"];
+
+        // --- Rendern beim Laden (Generiert alle Fragebögen dynamisch ins HTML) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // WURS-K
+            const wursContainer = document.getElementById('wursContainer');
+            wursItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optionsHtml = '';
+                for (let i = 0; i <= 4; i++) {
+                    optionsHtml += `<label><input type="radio" name="wurs_${index + 1}" value="${i}">${wursScaleLabels[i]}</label>`;
+                }
+                itemDiv.innerHTML = `<div class="item-text"><strong>${index + 1}.</strong> ${text}</div><div class="options">${optionsHtml}</div>`;
+                wursContainer.appendChild(itemDiv);
+            });
+
+            // ADHS-SB
+            const adhsSbContainer = document.getElementById('adhsSbContainer');
+            adhsSbItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optionsHtml = '';
+                for (let i = 0; i <= 3; i++) {
+                    optionsHtml += `<label><input type="radio" name="adhssb_${index + 1}" value="${i}">${adhsSbScaleLabels[i]}</label>`;
+                }
+                itemDiv.innerHTML = `<div class="item-text"><strong>${text}</strong></div><div class="options">${optionsHtml}</div>`;
+                adhsSbContainer.appendChild(itemDiv);
+            });
+
+            // AQ
+            const aqContainer = document.getElementById('aqContainer');
+            aqItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.innerHTML = `
+                    <div class="item-text"><strong>${index + 1}.</strong> ${text}</div>
+                    <div class="options">
+                        <label><input type="radio" name="aq_${index + 1}" value="ja"> ja</label>
+                        <label><input type="radio" name="aq_${index + 1}" value="nein"> nein</label>
+                    </div>
+                `;
+                aqContainer.appendChild(itemDiv);
+            });
+
+            // HEALTH-49
+            const healthContainer = document.getElementById('healthContainer');
+            let globalItemCounter = 1;
+            healthSections.forEach((sec, sIdx) => {
+                const secDiv = document.createElement('div');
+                secDiv.innerHTML = `<h3>${sec.title}</h3><p class="intro">${sec.intro}</p>`;
+                if (sIdx === 4) {
+                    sec.scaleTypes.forEach(st => {
+                        const subDiv = document.createElement('div');
+                        subDiv.innerHTML = `<p style="font-weight: 500; margin-top: 1rem;">${st.label}</p>`;
+                        st.items.forEach(itText => {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'item';
+                            let optionsHtml = '';
+                            st.options.forEach((opt, oVal) => {
+                                optionsHtml += `<label><input type="radio" name="health_${globalItemCounter}" value="${oVal}">${oVal} = ${opt}</label>`;
+                            });
+                            itemDiv.innerHTML = `<div class="item-text">${itText}</div><div class="options">${optionsHtml}</div>`;
+                            subDiv.appendChild(itemDiv);
+                            globalItemCounter++;
+                        });
+                        secDiv.appendChild(subDiv);
+                    });
+                } else {
+                    sec.items.forEach(itText => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'item';
+                        let optionsHtml = '';
+                        sec.scale.forEach((opt, oVal) => {
+                            optionsHtml += `<label><input type="radio" name="health_${globalItemCounter}" value="${oVal}">${oVal} = ${opt}</label>`;
+                        });
+                        itemDiv.innerHTML = `<div class="item-text">${itText}</div><div class="options">${optionsHtml}</div>`;
+                        secDiv.appendChild(itemDiv);
+                        globalItemCounter++;
+                    });
+                }
+                healthContainer.appendChild(secDiv);
+            });
+
+            // PHQ-D Rendern
+            const phqSymContainer = document.getElementById('phqSymptomContainer');
+            phqSymptomItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optHtml = '';
+                phqSymptomScale.forEach((opt, val) => {
+                    optHtml += `<label><input type="radio" name="phq_sym_${index + 1}" value="${val}">${val} = ${opt}</label>`;
+                });
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options">${optHtml}</div>`;
+                phqSymContainer.appendChild(itemDiv);
+            });
+
+            const phqPanicContainer = document.getElementById('phqPanicContainer');
+            phqPanicItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options"><label><input type="radio" name="phq_panic_${index + 1}" value="NEIN"> NEIN</label><label><input type="radio" name="phq_panic_${index + 1}" value="JA"> JA</label></div>`;
+                phqPanicContainer.appendChild(itemDiv);
+            });
+
+            const phqSomatoContainer = document.getElementById('phqSomatoContainer');
+            phqSomatoItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optHtml = '';
+                phqSomatoScale.forEach((opt, val) => {
+                    optHtml += `<label><input type="radio" name="phq_somato_${index + 1}" value="${val}">${val} = ${opt}</label>`;
+                });
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options">${optHtml}</div>`;
+                phqSomatoContainer.appendChild(itemDiv);
+            });
+
+            const phqAnxietyContainer = document.getElementById('phqAnxietyContainer');
+            phqAnxietyItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optHtml = '';
+                phqAnxietyScale.forEach((opt, val) => {
+                    optHtml += `<label><input type="radio" name="phq_anx_${index + 1}" value="${val}">${val} = ${opt}</label>`;
+                });
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options">${optHtml}</div>`;
+                phqAnxietyContainer.appendChild(itemDiv);
+            });
+
+            const phqAlcoholContainer = document.getElementById('phqAlcoholContainer');
+            phqAlcoholItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options"><label><input type="radio" name="phq_alc_${index + 1}" value="NEIN"> NEIN</label><label><input type="radio" name="phq_alc_${index + 1}" value="JA"> JA</label></div>`;
+                phqAlcoholContainer.appendChild(itemDiv);
+            });
+
+            const phqStressContainer = document.getElementById('phqStressContainer');
+            phqStressItems.forEach((text, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                let optHtml = '';
+                phqStressScale.forEach((opt, val) => {
+                    optHtml += `<label><input type="radio" name="phq_stress_${index + 1}" value="${val}">${val} = ${opt}</label>`;
+                });
+                itemDiv.innerHTML = `<div class="item-text">${text}</div><div class="options">${optHtml}</div>`;
+                phqStressContainer.appendChild(itemDiv);
+            });
+
+            loadFormData();
+            document.getElementById('adhsFormSet').addEventListener('input', saveFormData);
+            document.getElementById('adhsFormSet').addEventListener('change', saveFormData);
+        });
+
+        // --- Navigation ---
+        function nextStep(targetStep) {
+            if (targetStep === 2) {
+                const v = document.getElementById('initV').value;
+                const n = document.getElementById('initN').value;
+                const tag = document.getElementById('geburtsTag').value;
+                const jahr = document.getElementById('geburtsJahr').value;
+                if (!v || !n || !tag || !jahr) {
+                    alert('Bitte füllen Sie zuerst alle Felder des Pseudonyms vollständig aus.');
+                    return;
+                }
+            }
+            document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${targetStep}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep(targetStep) {
+            document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${targetStep}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- LocalStorage ---
+        const STORAGE_KEY = 'adhs_asperger_health_phq_wizard_draft';
+        function saveFormData() {
+            const data = {
+                initV: document.getElementById('initV').value,
+                initN: document.getElementById('initN').value,
+                geburtsTag: document.getElementById('geburtsTag').value,
+                geburtsJahr: document.getElementById('geburtsJahr').value,
+                answers: {}
+            };
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                data.answers[input.name] = input.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFormData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                if (data.initV) document.getElementById('initV').value = data.initV;
+                if (data.initN) document.getElementById('initN').value = data.initN;
+                if (data.geburtsTag) document.getElementById('geburtsTag').value = data.geburtsTag;
+                if (data.geburtsJahr) document.getElementById('geburtsJahr').value = data.geburtsJahr;
+                if (data.answers) {
+                    for (const [name, value] of Object.entries(data.answers)) {
+                        const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                }
+            } catch (e) {
+                console.error("Fehler beim Laden des Zwischenstands", e);
+            }
+        }
+
+        // --- FORMULAR ABSENDEN & AN WORKER SENDEN ---
+        document.getElementById('adhsFormSet').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Pseudonym generieren
+            const pseudonym = `${document.getElementById('initV').value.toUpperCase()}.${document.getElementById('initN').value.toUpperCase()}-${document.getElementById('geburtsTag').value}-${document.getElementById('geburtsJahr').value}`;
+
+            // Alle Antworten auslesen
+            const answers = {};
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                answers[input.name] = input.value;
+            });
+
+            const payload = {
+                pseudonym: pseudonym,
+                erstellt_am: new Date().toISOString(),
+                antworten: answers
+            };
+
+            try {
+                // Sende an deinen Cloudflare Worker
+                const response = await fetch("https://mein-fragebogen-worker.andyborntraeger.workers.dev", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    // Formular ausblenden und neutrale Dankesnachricht anzeigen
+                    document.getElementById('adhsFormSet').style.display = 'none';
+                    document.getElementById('resultContent').innerHTML = "<strong>Vielen Dank!</strong> Ihre Angaben wurden erfolgreich und verschlüsselt an Ihre Praxis übermittelt.";
+                    document.getElementById('resultBox').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    localStorage.removeItem(STORAGE_KEY);
+                } else {
+                    alert("Fehler beim Übermitteln der Daten. Bitte versuchen Sie es später noch einmal.");
+                }
+            } catch (err) {
+                console.error("Netzwerkfehler:", err);
+                alert("Übertragung fehlgeschlagen. Bitte überprüfen Sie Ihre Internetverbindung.");
+            }
+        });
+    </script>
+</body>
+</html>
